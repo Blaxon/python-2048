@@ -4,6 +4,7 @@
 The minigame 2048 in python
 """
 import random
+import curses
 
 
 def init():
@@ -75,6 +76,7 @@ def move(matrix, direction):
                 j += 1
     return matrix
 
+
 def insert(matrix):
     """insert one 2 or 4 into the matrix. return the matrix list
     """
@@ -86,28 +88,34 @@ def insert(matrix):
     matrix[randomZeroIndex] = 2
     return matrix
 
+
 def output(matrix):
     """
     print the matrix. return the matrix list
     """
+    screen_str = ''
     max_num_width = len(str(max(matrix)))
     demarcation = ('+' + '-'*(max_num_width+2)) * 4 + '+'  # generate demarcation line like '+---+---+---+'
-    print demarcation
+    # print(demarcation)
+    screen_str += demarcation + '\n'
     for i in range(len(matrix)):
         if matrix[i] == 0:
             printchar = ' '
         else:
             printchar = str(matrix[i])
-        print '|', 
-        print '{0:>{1}}'.format(printchar,max_num_width),
+        # print '|',
+        # print '{0:>{width}}'.format(printchar, width=max_num_width),
+        screen_str += '|' + ' {0:>{width}} '.format(printchar, width=max_num_width)
         if (i + 1) % 4 == 0:
-            print '|'
-            print demarcation
-    print
-
+            # print '|'
+            # print demarcation
+            screen_str += '|\n' + demarcation + '\n'
+    # print
+    return screen_str
 
 def isOver(matrix):
-    """is game over? return bool
+    """
+    is game over? return bool
     """
     if 0 in matrix:
         return False
@@ -144,49 +152,76 @@ def play():
     vim_map = {'h': 'a', 'j': 's', 'k': 'w', 'l': 'd'}
     matrix_stack = []  # just used by back function
     matrix_stack.append(list(matrix))
-    step = len(matrix_stack) - 1
+    _step = len(matrix_stack) - 1
+
+    # new way to print
+    screen = curses.initscr()
+    curses.noecho()
+    curses.cbreak()
+    screen.nodelay(1)
+
 
     while True:
-        output(matrix)
+        # get matrix print string
+        screen_str = output(matrix)
+
+        # game is over?
         if isOver(matrix):
-            print 'Cannot move anyway. Game Over...'
-            exit()
+            # print 'Cannot move anyway. Game Over...'
+            getchar('Cannot move anyway. Game Over...')
+            break
+        elif max(matrix) == 2048:
+            _input = raw_input('The max number is 2048,you win the goal! q for quit, others for continue. ')
+            if _input == 'q':
+                break
+
+        prompt = "[NORMAL] w(up)/s(down)/a(left)/d(right)"
+        if vim_mode:
+            prompt = "[VIM MODE] h:left, j:down, k:up, l:right"
+        # _input = getchar(prompt='Step {0:2d} {1} q(quit) b(back) v(vim_mode): '.format(_step, prompt))
+        screen_str += 'Step {0:2d} {1} q(quit) b(back) v(vim_mode): \n'.format(_step, prompt)
+        screen.addstr(0, 0, screen_str)
+        screen.refresh()
+        _input = getchar(prompt='')
+        screen.clear()
+        if vim_mode:
+            _input = vim_map.get(_input, _input)
+        # print 'get:', _input
+        if _input in ['w', 's', 'a', 'd']:
+            matrix = move(matrix, _input)
+            if matrix == matrix_stack[-1]:
+                # print 'Not changed. Try another direction.'
+                screen.refresh()
+                screen.addstr(10, 0, 'Not changed. Try another direction.')
+                screen.refresh()
+            else:
+                insert(matrix)
+                matrix_stack.append(list(matrix))
+                _step += 1
+            continue
+        elif _input == 'b':
+            if len(matrix_stack) == 1:
+                # print 'Cannot back anymore...'
+                screen.refresh()
+                screen.addstr(10, 0, 'Cannot back anymore..')
+                screen.refresh()
+                continue
+            matrix_stack.pop()
+            matrix = list(matrix_stack[-1])
+            _step -= 1
+            continue
+        elif _input == 'q':
+            break
+        elif _input == 'v':
+            vim_mode = not vim_mode
         else:
-            if max(matrix) == 2048:
-                input = raw_input('The max number is 2048, win the goal! q for quit, others for continue. ')
-                if input == 'q':
-                    exit()
-            while True:
-                prompt = "[NORMAL] w(up)/s(down)/a(left)/d(right)"
-                if vim_mode:
-                    prompt = "[VIM MODE] h:left, j:down, k:up, l:right"
-                input = getchar(prompt='Step {0:2d} {1} q(quit) b(back) v(vim_mode): '.format(step, prompt))
-                if vim_mode:
-                    input = vim_map.get(input, input)
-                print 'get:', input
-                if input in ['w', 's', 'a', 'd']:
-                    matrix = move(matrix, input)
-                    if matrix == matrix_stack[-1]:
-                        print 'Not chaged. Try another direction.'
-                    else:
-                        insert(matrix)
-        	        matrix_stack.append(list(matrix))
-                    break
-                elif input == 'b':
-                    if len(matrix_stack) == 1:
-                        print 'Cannot back anymore...'
-                        continue
-                    matrix_stack.pop()
-                    matrix = list(matrix_stack[-1])
-                    break
-                elif input == 'q':
-                    print 'Byebye!'
-                    exit()
-                elif input == 'v':
-                    vim_mode = not vim_mode
-                else:
-                    print 'Input error! Try again.'
-        step = len(matrix_stack) - 1
+            print 'Input error! Try again.'
+
+    # quit
+    curses.nocbreak()
+    curses.echo()
+    curses.endwin()
+    print 'Byebye!'
 
 if __name__ == '__main__':
     play()
