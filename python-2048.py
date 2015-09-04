@@ -4,20 +4,23 @@
 The minigame 2048 in python
 """
 import random
+
+
 def init():
     """
     initialize a 2048 matrix. return a matrix list
     """
-    matrix = [ 0 for i in range(16) ]
-    random_lst = random.sample( range(16), 2 ) # generate 2 different number
+    matrix = [0] * 16
+    random_lst = random.sample(range(16), 2)  # generate 2 different number
     matrix[random_lst[0]] = matrix[random_lst[1]] = 2
     return matrix
 
-def move(matrix,direction):
+
+def move(matrix, direction):
     """
     moving the matrix. return a matrix list
     """
-    mergedList = [] #initial the merged index
+    mergedList = []  # initial the merged index
     if direction == 'w':
         for i in range(16):
             j = i
@@ -26,20 +29,20 @@ def move(matrix,direction):
                     matrix[j-4] = matrix[j]
                     matrix[j] = 0
                 elif matrix[j-4] == matrix[j] and j - 4 not in mergedList and j not in mergedList:
-                    matrix[j-4] *=2
+                    matrix[j-4] *= 2
                     matrix[j] = 0
                     mergedList.append(j-4)
-                    mergedList.append(j)  #prevent the number to be merged twice
+                    mergedList.append(j)  # prevent the number to be merged twice
                 j -= 4
     elif direction == 's':
-        for i in range(15,-1,-1):
+        for i in range(15, -1, -1):
             j = i
             while j + 4 < 16:
                 if matrix[j+4] == 0:
                     matrix[j+4] = matrix[j]
                     matrix[j] = 0
                 elif matrix[j+4] == matrix[j] and j + 4 not in mergedList and j not in mergedList:
-                    matrix[j+4] *=2
+                    matrix[j+4] *= 2
                     matrix[j] = 0
                     mergedList.append(j)
                     mergedList.append(j+4)
@@ -52,20 +55,20 @@ def move(matrix,direction):
                     matrix[j-1] = matrix[j]
                     matrix[j] = 0
                 elif matrix[j-1] == matrix[j] and j - 1 not in mergedList and j not in mergedList:
-                    matrix[j-1] *=2
+                    matrix[j-1] *= 2
                     matrix[j] = 0
                     mergedList.append(j-1)
                     mergedList.append(j)
                 j -= 1
     else:
-        for i in range(15,-1,-1):
+        for i in range(15, -1, -1):
             j = i
             while j % 4 != 3:
                 if matrix[j+1] == 0:
                     matrix[j+1] = matrix[j]
                     matrix[j] = 0
                 elif matrix[j+1] == matrix[j] and j + 1 not in mergedList and j not in mergedList:
-                    matrix[j+1] *=2
+                    matrix[j+1] *= 2
                     matrix[j] = 0
                     mergedList.append(j)
                     mergedList.append(j+1)
@@ -88,7 +91,7 @@ def output(matrix):
     print the matrix. return the matrix list
     """
     max_num_width = len(str(max(matrix)))
-    demarcation = ( '+' + '-'*(max_num_width+2) ) * 4 + '+' #generate demarcation line like '+---+---+---+'
+    demarcation = ('+' + '-'*(max_num_width+2)) * 4 + '+'  # generate demarcation line like '+---+---+---+'
     print demarcation
     for i in range(len(matrix)):
         if matrix[i] == 0:
@@ -101,6 +104,7 @@ def output(matrix):
             print '|'
             print demarcation
     print
+
 
 def isOver(matrix):
     """is game over? return bool
@@ -117,6 +121,7 @@ def isOver(matrix):
                     return False
     return True
 
+
 def getchar(prompt="Wait input: "):
     import termios, sys
     fd = sys.stdin.fileno()
@@ -132,17 +137,21 @@ def getchar(prompt="Wait input: "):
         termios.tcsetattr(fd, termios.TCSADRAIN, old)
     return c
 
+
 def play():
     matrix = init()
     vim_mode = False
-    vim_map = {'h':'a', 'j':'s', 'k':'w', 'l':'d'}
-    matrix_stack = [] # just used by back function
+    vim_map = {'h': 'a', 'j': 's', 'k': 'w', 'l': 'd'}
+    matrix_stack = []  # just used by back function
     matrix_stack.append(list(matrix))
     step = len(matrix_stack) - 1
 
     while True:
         output(matrix)
-        if isOver(matrix) == False:
+        if isOver(matrix):
+            print 'Cannot move anyway. Game Over...'
+            exit()
+        else:
             if max(matrix) == 2048:
                 input = raw_input('The max number is 2048, win the goal! q for quit, others for continue. ')
                 if input == 'q':
@@ -151,12 +160,12 @@ def play():
                 prompt = "[NORMAL] w(up)/s(down)/a(left)/d(right)"
                 if vim_mode:
                     prompt = "[VIM MODE] h:left, j:down, k:up, l:right"
-                input = getchar(prompt = 'Step {0:2d} {1} q(quit) b(back) v(vim_mode): '.format(step,prompt))
+                input = getchar(prompt='Step {0:2d} {1} q(quit) b(back) v(vim_mode): '.format(step, prompt))
                 if vim_mode:
                     input = vim_map.get(input, input)
                 print 'get:', input
                 if input in ['w', 's', 'a', 'd']:
-                    matrix = move(matrix,input)
+                    matrix = move(matrix, input)
                     if matrix == matrix_stack[-1]:
                         print 'Not chaged. Try another direction.'
                     else:
@@ -177,9 +186,6 @@ def play():
                     vim_mode = not vim_mode
                 else:
                     print 'Input error! Try again.'
-        else:
-            print 'Cannot move anyway. Game Over...'
-            exit()
         step = len(matrix_stack) - 1
 
 if __name__ == '__main__':
