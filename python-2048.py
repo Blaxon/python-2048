@@ -80,12 +80,8 @@ def move(matrix, direction):
 def insert(matrix):
     """insert one 2 or 4 into the matrix. return the matrix list
     """
-    getZeroIndex = []
-    for i in range(16):
-        if matrix[i] == 0:
-            getZeroIndex.append(i)
-    randomZeroIndex = random.choice(getZeroIndex)
-    matrix[randomZeroIndex] = 2
+    random_zero_index = random.choice([index for index in range(16) if matrix[index] == 0])
+    matrix[random_zero_index] = random.choice([2, 4])
     return matrix
 
 
