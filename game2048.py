@@ -82,7 +82,7 @@ def insert(matrix):
     """insert one 2 or 4 into the matrix. return the matrix list
     """
     random_zero_index = random.choice([index for index in range(16) if matrix[index] == 0])
-    matrix[random_zero_index] = random.choice([2, 4])
+    matrix[random_zero_index] = random.random() > 0.9 and 4 or 2
     return matrix
 
 
