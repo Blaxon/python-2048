@@ -6,7 +6,8 @@ The minigame 2048 in python
 this is the ai for 2048
 
 """
-
+import os
+import sys
 import time
 
 
@@ -18,6 +19,7 @@ DIRECTION = {'w': 'up',
              'a': 'left',
              'd': 'right',
              '': ''}
+
 
 def ai_play():
     matrix = game2048.init()
@@ -31,10 +33,10 @@ def ai_play():
         # is game over?
         if game2048.isOver(matrix):
             print("game over!")
-            return
+            return 'f'
         if game2048.isWin(matrix):
             print("you win!")
-            return
+            return 'w'
         # find best move
         move, score = find_best_move(matrix)
         if move == 'n':
@@ -60,7 +62,10 @@ def find_best_move(matrix):
     # for each direction calculate score
     for direction in ['w', 's', 'a', 'd']:
         _matrix = game2048.move(matrix[:], direction)
-        score = score_matrix(_matrix)
+        if _matrix == matrix:
+            score = 0
+        else:
+            score = score_matrix(_matrix)
         if score > best:
             best = score
             best_move = direction
@@ -74,5 +79,25 @@ def score_matrix(matrix):
             score += 1
     return score
 
+
+def parse_args(argv):
+    import argparse
+
+    parser = argparse.ArgumentParser(description="Use the AI to play 2048 via browser control")
+    parser.add_argument('-t', '--time', help="Times we test", type=int)
+
+    return parser.parse_args(argv)
+
+
+def main(argv):
+    args = parse_args(argv)
+    win_time = 0
+    for _ in range(1, args.time+1):
+        if ai_play() == 'w':
+            win_time += 1
+    print('win %5d, fail %5d, probability: %3.3f' % (win_time, args.time-win_time, float(win_time/args.time)))
+
+
 if __name__ == '__main__':
-    ai_play()
+    exit(main(sys.argv[1:]))
+
