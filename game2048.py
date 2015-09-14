@@ -13,7 +13,8 @@ def init():
     """
     matrix = [0] * 16
     random_lst = random.sample(range(16), 2)  # generate 2 different number
-    matrix[random_lst[0]] = matrix[random_lst[1]] = 2
+    matrix[random_lst[0]] = random.random() > 0.9 and 4 or 2
+    matrix[random_lst[1]] = random.random() > 0.9 and 4 or 2
     return matrix
 
 
@@ -175,7 +176,7 @@ def play():
         if vim_mode:
             prompt = "[VIM MODE] h:left, j:down, k:up, l:right"
         # _input = getchar(prompt='Step {0:2d} {1} q(quit) b(back) v(vim_mode): '.format(_step, prompt))
-        screen_str += 'Step {0:2d} {1} q(quit) b(back) v(vim_mode): \n'.format(_step, prompt)
+        screen_str += 'Step {0:2d} {1} q(quit) b(back) v(vim_mode) r(restart): \n'.format(_step, prompt)
         screen.addstr(0, 0, screen_str)
         screen.refresh()
         _input = getchar(prompt='')
@@ -210,6 +211,8 @@ def play():
             break
         elif _input == 'v':
             vim_mode = not vim_mode
+        elif _input == 'r':
+            return 'restart'
         else:
             print 'Input error! Try again.'
 
@@ -218,6 +221,17 @@ def play():
     curses.echo()
     curses.endwin()
     print 'Byebye!'
+    return 'quit'
+
+
+def main():
+    while 1:
+        ret = play()
+        if ret == 'quit':
+            break
+        elif ret == 'restart':
+            continue
+
 
 if __name__ == '__main__':
-    play()
+    main()
