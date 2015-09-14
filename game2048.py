@@ -110,6 +110,7 @@ def output(matrix):
     # print
     return screen_str
 
+
 def isOver(matrix):
     """
     is game over? return bool
@@ -125,6 +126,10 @@ def isOver(matrix):
                 if matrix[i] == matrix [i+4]:
                     return False
     return True
+
+
+def isWin(matrix):
+    return max(matrix) == 2048
 
 
 def getchar(prompt="Wait input: "):
@@ -143,6 +148,21 @@ def getchar(prompt="Wait input: "):
     return c
 
 
+def game_over(screen, state):
+    if state:
+        _str = 'You reach the goal!Congratulations!(press "q" for quit or "r" for restart)\n'
+    else:
+        _str = 'Cannot move anyway.Game over..(press "q" for quit or "r" for restart)\n'
+    while 1:
+        screen.refresh()
+        screen.addstr(0, 0, _str)
+        c = getchar(prompt='')
+        if c == 'q':
+            return 'quit'
+        if c == 'r':
+            return 'restart'
+
+
 def play():
     matrix = init()
     vim_mode = False
@@ -157,20 +177,15 @@ def play():
     curses.cbreak()
     screen.nodelay(1)
 
-
     while True:
         # get matrix print string
         screen_str = output(matrix)
 
         # game is over?
         if isOver(matrix):
-            # print 'Cannot move anyway. Game Over...'
-            getchar('Cannot move anyway. Game Over...')
-            break
-        elif max(matrix) == 2048:
-            _input = raw_input('The max number is 2048,you win the goal! q for quit, others for continue. ')
-            if _input == 'q':
-                break
+            return game_over(screen, False)
+        if isWin(matrix):
+            return game_over(screen, True)
 
         prompt = "[NORMAL] w(up)/s(down)/a(left)/d(right)"
         if vim_mode:
