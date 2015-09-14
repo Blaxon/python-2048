@@ -28,3 +28,10 @@ ScreenShort
 ![Alt img](screenshot.png "ScreenShort")
 
 ![Alt img](screenshot2.png "ScreenShort")
+
+
+===
+新添增了AI设计，为研究其输出文本格式为：
+次数-版本号.txt
+
+001版本：求能使空白快最多的移动方向，并使之移动
