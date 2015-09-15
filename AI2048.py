@@ -29,14 +29,14 @@ def ai_play():
     while 1:
         # time.sleep(1)
         print_matrix(matrix)
-        print('setp: %3d and the best move is %s with score %4d' % (step, DIRECTION[move], score))
+        print('setp: %3d and the best move is %s with score %3d' % (step, DIRECTION[move], score))
         # is game over?
         if game2048.isOver(matrix):
             print("game over!")
-            return 'f'
+            return max(matrix)
         if game2048.isWin(matrix):
             print("you win!")
-            return 'w'
+            return max(matrix)
         # find best move
         move, score = find_best_move(matrix)
         if move == 'n':
@@ -50,7 +50,7 @@ def ai_play():
 def print_matrix(matrix):
     i = 1
     for item in matrix:
-        print('%5d' % item),
+        print('%5d' % item, end='')
         if i % 4 == 0:
             print('')
         i += 1
@@ -90,12 +90,17 @@ def parse_args(argv):
 
 
 def main(argv):
+    start_time = time.time()
     args = parse_args(argv)
     win_time = 0
+
     for _ in range(1, args.time+1):
-        if ai_play() == 'w':
+        if ai_play() == 2048:
             win_time += 1
-    print('win %5d, fail %5d, probability: %3.3f' % (win_time, args.time-win_time, float(win_time/args.time)))
+    print('win %5d, fail %5d, probability: %3.3f, takes %4.2f s' % (win_time,
+                                                                    args.time-win_time,
+                                                                    float(win_time/args.time),
+                                                                    time.time() - start_time))
 
 
 if __name__ == '__main__':
