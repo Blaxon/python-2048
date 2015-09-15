@@ -37,7 +37,6 @@ def ai_play():
     while 1:
         # time.sleep(1)
         print_matrix(matrix)
-        print('setp: %3d and the best move is %s with score %3d' % (step, DIRECTION[move], score))
         # is game over?
         if game2048.isOver(matrix):
             print("game over!")
@@ -50,6 +49,7 @@ def ai_play():
         if move == 'n':
             break
         game2048.move(matrix, move)
+        print('setp: %3d and the best move is %s with score %3d' % (step, DIRECTION[move], score))
         game2048.insert(matrix)
         step += 1
     print('ai finished.')
@@ -77,6 +77,7 @@ def find_best_move(matrix):
         if score > best:
             best = score
             best_move = direction
+        print("The score of direction %s is %8d." % (DIRECTION[direction], score))
     return best_move, best
 
 
