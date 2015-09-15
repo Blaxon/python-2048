@@ -62,7 +62,7 @@ def move(matrix, direction):
                     mergedList.append(j-1)
                     mergedList.append(j)
                 j -= 1
-    else:
+    elif direction == 'd':
         for i in range(15, -1, -1):
             j = i
             while j % 4 != 3:
@@ -75,6 +75,9 @@ def move(matrix, direction):
                     mergedList.append(j)
                     mergedList.append(j+1)
                 j += 1
+    else:
+        print("key error. get key:", direction)
+        raise KeyError
     return matrix
 
 
