@@ -95,17 +95,13 @@ def output(matrix):
     demarcation = ('+' + '-'*(max_num_width+2)) * 4 + '+'  # generate demarcation line like '+---+---+---+'
     # print(demarcation)
     screen_str += demarcation + '\n'
-    for i in range(len(matrix)):
+    for i in range(16):
         if matrix[i] == 0:
             printchar = ' '
         else:
             printchar = str(matrix[i])
-        # print '|',
-        # print '{0:>{width}}'.format(printchar, width=max_num_width),
         screen_str += '|' + ' {0:>{width}} '.format(printchar, width=max_num_width)
         if (i + 1) % 4 == 0:
-            # print '|'
-            # print demarcation
             screen_str += '|\n' + demarcation + '\n'
     # print
     return screen_str
@@ -190,7 +186,6 @@ def play():
         prompt = "[NORMAL] w(up)/s(down)/a(left)/d(right)"
         if vim_mode:
             prompt = "[VIM MODE] h:left, j:down, k:up, l:right"
-        # _input = getchar(prompt='Step {0:2d} {1} q(quit) b(back) v(vim_mode): '.format(_step, prompt))
         screen_str += 'Step {0:2d} {1} q(quit) b(back) v(vim_mode) r(restart): \n'.format(_step, prompt)
         screen.addstr(0, 0, screen_str)
         screen.refresh()
@@ -198,11 +193,9 @@ def play():
         screen.clear()
         if vim_mode:
             _input = vim_map.get(_input, _input)
-        # print 'get:', _input
         if _input in ['w', 's', 'a', 'd']:
             matrix = move(matrix, _input)
             if matrix == matrix_stack[-1]:
-                # print 'Not changed. Try another direction.'
                 screen.refresh()
                 screen.addstr(10, 0, 'Not changed. Try another direction.')
                 screen.refresh()
@@ -213,7 +206,6 @@ def play():
             continue
         elif _input == 'b':
             if len(matrix_stack) == 1:
-                # print 'Cannot back anymore...'
                 screen.refresh()
                 screen.addstr(10, 0, 'Cannot back anymore..')
                 screen.refresh()
@@ -229,13 +221,12 @@ def play():
         elif _input == 'r':
             return 'restart'
         else:
-            print 'Input error! Try again.'
+            print('Input error! Try again.')
 
     # quit
     curses.nocbreak()
     curses.echo()
     curses.endwin()
-    print 'Byebye!'
     return 'quit'
 
 
@@ -243,6 +234,7 @@ def main():
     while 1:
         ret = play()
         if ret == 'quit':
+            print('Byebye!')
             break
         elif ret == 'restart':
             continue
