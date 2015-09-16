@@ -11,6 +11,7 @@ What's new?
 * use MOVE_TABLE to preference move
 * capsulize move function
 
+Author: Xander Hang
 """
 import sys
 import time

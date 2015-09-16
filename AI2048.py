@@ -1,10 +1,13 @@
 #!/usr/bin/env python
 # encoding: utf-8
 """
-The minigame 2048 in python
+The mini game 2048 in python
 
 this is the ai for 2048
 
+require python3.x
+
+Author: Xander Hang
 """
 import os
 import sys
@@ -90,10 +93,10 @@ def parse_args(argv):
 
 
 def main(argv):
-    start_time = time.time()
     args = parse_args(argv)
     win_time = 0
 
+    start_time = time.time()
     for _ in range(1, args.time+1):
         if ai_play() == 2048:
             win_time += 1

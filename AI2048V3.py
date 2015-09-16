@@ -12,6 +12,7 @@ What's new?
 * add monotonicity function to calc score
 * show max score we reach in terminal,and show its counter
 
+Author: Xander Hang
 """
 import os
 import sys
