@@ -22,6 +22,7 @@ def move(matrix, direction):
     """
     moving the matrix. return a matrix list
     """
+    score = 0
     mergedList = []  # initial the merged index
     if direction == 'w':
         for i in range(16):
@@ -32,6 +33,7 @@ def move(matrix, direction):
                     matrix[j] = 0
                 elif matrix[j-4] == matrix[j] and j - 4 not in mergedList and j not in mergedList:
                     matrix[j-4] *= 2
+                    score += matrix[j]
                     matrix[j] = 0
                     mergedList.append(j-4)
                     mergedList.append(j)  # prevent the number to be merged twice
@@ -45,6 +47,7 @@ def move(matrix, direction):
                     matrix[j] = 0
                 elif matrix[j+4] == matrix[j] and j + 4 not in mergedList and j not in mergedList:
                     matrix[j+4] *= 2
+                    score += matrix[j]
                     matrix[j] = 0
                     mergedList.append(j)
                     mergedList.append(j+4)
@@ -58,6 +61,7 @@ def move(matrix, direction):
                     matrix[j] = 0
                 elif matrix[j-1] == matrix[j] and j - 1 not in mergedList and j not in mergedList:
                     matrix[j-1] *= 2
+                    score += matrix[j]
                     matrix[j] = 0
                     mergedList.append(j-1)
                     mergedList.append(j)
@@ -71,6 +75,7 @@ def move(matrix, direction):
                     matrix[j] = 0
                 elif matrix[j+1] == matrix[j] and j + 1 not in mergedList and j not in mergedList:
                     matrix[j+1] *= 2
+                    score += matrix[j]
                     matrix[j] = 0
                     mergedList.append(j)
                     mergedList.append(j+1)
@@ -78,7 +83,7 @@ def move(matrix, direction):
     else:
         print("key error. get key:", direction)
         raise KeyError
-    return matrix
+    return matrix, score
 
 
 def insert(matrix):
@@ -169,6 +174,7 @@ def play():
     matrix_stack = []  # just used by back function
     matrix_stack.append(list(matrix))
     _step = len(matrix_stack) - 1
+    score = 0
 
     # new way to print
     screen = curses.initscr()
@@ -189,7 +195,8 @@ def play():
         prompt = "[NORMAL] w(up)/s(down)/a(left)/d(right)"
         if vim_mode:
             prompt = "[VIM MODE] h:left, j:down, k:up, l:right"
-        screen_str += 'Step {0:2d} {1} q(quit) b(back) v(vim_mode) r(restart): \n'.format(_step, prompt)
+        screen_str += 'Step {0:2d} {1} q(quit) b(back) v(vim_mode) r(restart)\
+        your score {2} \n'.format(_step, prompt, score)
         screen.addstr(0, 0, screen_str)
         screen.refresh()
         _input = getchar(prompt='')
@@ -197,7 +204,7 @@ def play():
         if vim_mode:
             _input = vim_map.get(_input, _input)
         if _input in ['w', 's', 'a', 'd']:
-            matrix = move(matrix, _input)
+            matrix, _score = move(matrix, _input)
             if matrix == matrix_stack[-1]:
                 screen.refresh()
                 screen.addstr(10, 0, 'Not changed. Try another direction.')
@@ -205,6 +212,7 @@ def play():
             else:
                 insert(matrix)
                 matrix_stack.append(list(matrix))
+                score += _score
                 _step += 1
             continue
         elif _input == 'b':
