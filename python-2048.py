@@ -2,6 +2,7 @@
 # encoding: utf-8
 """
 The minigame 2048 in python
+this is test branch commit
 """
 import random
 def init():
